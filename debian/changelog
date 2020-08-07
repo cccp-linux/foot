@@ -1,0 +1,5 @@
+foot (1.4.4-1) unstable; urgency=medium
+
+  * Initial release. (Closes: #966327)
+
+ -- Birger Schacht <birger@debian.org>  Fri, 07 Aug 2020 19:01:39 +0200

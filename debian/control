@@ -1,0 +1,42 @@
+Source: foot
+Section: x11
+Priority: optional
+Maintainer: Birger Schacht <birger@debian.org>
+Build-Depends: debhelper-compat (= 13),
+               meson,
+               ninja-build,
+               wayland-protocols,
+               libxkbcommon-dev,
+               pkg-config,
+               libpixman-1-dev,
+               libfreetype6-dev,
+               libfontconfig-dev,
+               libwayland-dev,
+               libtllist-dev,
+               libfcft-dev,
+               scdoc
+Standards-Version: 4.5.0
+Homepage: https://codeberg.org/dnkl/foot
+Rules-Requires-Root: no
+Vcs-Git: https://salsa.debian.org/birger/foot.git
+Vcs-Browser: https://salsa.debian.org/birger/foot
+
+Package: foot
+Architecture: any
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: Fast, lightweight and minimalistic Wayland terminal emulator
+ The fast, lightweight and minimalistic Wayland terminal emulator.
+ Features
+ .
+  * Fast
+  * Lightweight, in dependencies, on-disk and in-memory
+  * Wayland native
+  * DE agnostic
+  * User configurable font fallback
+  * On-the-fly DPI font size adjustment
+  * Scrollback search
+  * Color emoji support
+  * Server/daemon mode
+  * Multi-seat
+  * Synchronized Updates support
+  * Sixel image support
