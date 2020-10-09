@@ -12,8 +12,10 @@ Build-Depends: debhelper-compat (= 13),
                libfreetype6-dev,
                libfontconfig-dev,
                libwayland-dev,
-               libtllist-dev,
-               libfcft-dev,
+               libtllist-dev (>= 1.0.4),
+               libfcft-dev (>= 2.3.0),
+               libffi-dev,
+               libharfbuzz-dev,
                scdoc
 Standards-Version: 4.5.0
 Homepage: https://codeberg.org/dnkl/foot
