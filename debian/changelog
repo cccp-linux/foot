@@ -1,3 +1,10 @@
+foot (1.5.3-2) unstable; urgency=medium
+
+  * Create a separate package `foot-terminfo` for the foot
+    terminfo files (Closes: #975534)
+
+ -- Birger Schacht <birger@debian.org>  Mon, 23 Nov 2020 16:12:59 +0100
+
 foot (1.5.3-1) unstable; urgency=medium
 
   * New upstream release
