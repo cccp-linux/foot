@@ -1,3 +1,9 @@
+foot (1.5.3-3) unstable; urgency=medium
+
+  * Source-only upload as is.
+
+ -- Birger Schacht <birger@debian.org>  Tue, 24 Nov 2020 16:13:35 +0100
+
 foot (1.5.3-2) unstable; urgency=medium
 
   * Create a separate package `foot-terminfo` for the foot
