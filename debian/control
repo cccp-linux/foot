@@ -25,7 +25,7 @@ Vcs-Browser: https://salsa.debian.org/birger/foot
 
 Package: foot
 Architecture: any
-Depends: ${misc:Depends}, ${shlibs:Depends}, foot-terminfo
+Depends: ${misc:Depends}, ${shlibs:Depends}, foot-terminfo (>= 1.5.3-4)
 Description: Fast, lightweight and minimalistic Wayland terminal emulator
  The fast, lightweight and minimalistic Wayland terminal emulator.
  Features
@@ -44,6 +44,8 @@ Description: Fast, lightweight and minimalistic Wayland terminal emulator
   * Sixel image support
 
 Package: foot-terminfo
+Replaces: foot (<< 1.5.3-2)
+Breaks: foot (<< 1.5.3-2)
 Architecture: all
 Depends: ${misc:Depends}, ${shlibs:Depends}
 Description: Fast, lightweight and minimalistic Wayland terminal emulator (terminfo files)

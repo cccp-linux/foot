@@ -1,3 +1,10 @@
+foot (1.5.3-4) unstable; urgency=medium
+
+  * Add missing Breaks+Replaces to foot-terminfo
+    (Closes: #975889)
+
+ -- Birger Schacht <birger@debian.org>  Thu, 26 Nov 2020 15:51:17 +0100
+
 foot (1.5.3-3) unstable; urgency=medium
 
   * Source-only upload as is.
