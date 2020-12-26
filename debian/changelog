@@ -1,3 +1,10 @@
+foot (1.6.2-1) unstable; urgency=medium
+
+  * New upstream release
+  * Drop d/copyright paragraphs for removed files
+
+ -- Birger Schacht <birger@debian.org>  Sun, 27 Dec 2020 14:25:28 +0100
+
 foot (1.5.4-1) unstable; urgency=medium
 
   * New upstream release
