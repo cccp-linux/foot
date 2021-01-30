@@ -5,3 +5,4 @@ usr/share/foot
 usr/share/icons/hicolor
 usr/share/man
 usr/share/zsh/site-functions
+usr/share/fish/vendor_completions.d

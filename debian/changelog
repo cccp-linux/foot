@@ -1,8 +1,9 @@
 foot (1.6.3-1) unstable; urgency=medium
 
   * New upstream release
+  * d/foot.install: add completions for fish shell
 
- -- Birger Schacht <birger@debian.org>  Sat, 30 Jan 2021 14:20:56 +0100
+ -- Birger Schacht <birger@debian.org>  Sat, 30 Jan 2021 14:29:10 +0100
 
 foot (1.6.2-1) unstable; urgency=medium
 
