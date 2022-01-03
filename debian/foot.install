@@ -1,8 +1,9 @@
 usr/bin
 usr/share/applications
 usr/share/doc/foot
-usr/share/foot
+usr/share/foot/foot.ini
 usr/share/icons/hicolor
 usr/share/man
 usr/share/zsh/site-functions
 usr/share/fish/vendor_completions.d
+usr/share/bash-completion

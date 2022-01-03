@@ -1,3 +1,15 @@
+foot (1.10.3-1) unstable; urgency=medium
+
+  * New upstream release (Closes: #988593)
+  * Introduce new package foot-themes that contains the upstream shipped theme
+    files
+  * Update years in d/copyright
+  * Bump standards-version to 4.6.0.1 (no changes required)
+  * Bump libfcft dependency to >=2.4.0
+  * Ship bash-completion files
+
+ -- Birger Schacht <birger@debian.org>  Mon, 03 Jan 2022 12:42:13 +0100
+
 foot (1.6.4-1) unstable; urgency=medium
 
   * New upstream release
