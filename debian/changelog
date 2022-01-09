@@ -1,3 +1,10 @@
+foot (1.10.3-2) unstable; urgency=medium
+
+  * Add a README to the foot-themes package explaining how to enable a theme
+    (Closes: #1003086)
+
+ -- Birger Schacht <birger@debian.org>  Mon, 10 Jan 2022 17:36:03 +0100
+
 foot (1.10.3-1) unstable; urgency=medium
 
   * New upstream release (Closes: #988593)
