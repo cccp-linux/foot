@@ -1,3 +1,12 @@
+foot (1.11.0-1) unstable; urgency=medium
+
+  * New upstream release
+  * Add dh-exec to build-depends and use dh-exec in d/foot.install to install
+    zsh completions to correct directory (Closes: #1004836)
+  * Bump min version of libfcft-dev in build-depends
+
+ -- Birger Schacht <birger@debian.org>  Sun, 13 Feb 2022 09:50:59 +0100
+
 foot (1.10.3-2) unstable; urgency=medium
 
   * Add a README to the foot-themes package explaining how to enable a theme
