@@ -1,3 +1,11 @@
+foot (1.11.0-2) unstable; urgency=medium
+
+  * Don't use dh-exec to move zsh completions to correct directory, but use a
+    patch (because of #831786) (Closes: #1006194)
+  * Drop filenamemangle option from d/watch
+
+ -- Birger Schacht <birger@debian.org>  Mon, 21 Feb 2022 10:05:17 +0100
+
 foot (1.11.0-1) unstable; urgency=medium
 
   * New upstream release

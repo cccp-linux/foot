@@ -3,7 +3,6 @@ Section: x11
 Priority: optional
 Maintainer: Birger Schacht <birger@debian.org>
 Build-Depends: debhelper-compat (= 13),
-               dh-exec,
                meson,
                ninja-build,
                wayland-protocols,
