@@ -1,7 +1,7 @@
 usr/bin
 usr/share/applications
 usr/share/doc/foot
-usr/share/foot/foot.ini
+etc/xdg/foot/foot.ini
 usr/share/icons/hicolor
 usr/share/man
 usr/share/zsh/vendor-completions

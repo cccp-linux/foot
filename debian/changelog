@@ -1,3 +1,11 @@
+foot (1.12.0-1) unstable; urgency=medium
+
+  * New upstream release
+  * Update path for example config in d/foot.install
+  * Set minimum required meson version in d/control
+
+ -- Birger Schacht <birger@debian.org>  Sat, 23 Apr 2022 08:34:19 +0200
+
 foot (1.11.0-2) unstable; urgency=medium
 
   * Don't use dh-exec to move zsh completions to correct directory, but use a
