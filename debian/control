@@ -27,6 +27,7 @@ Vcs-Browser: https://salsa.debian.org/birger/foot
 
 Package: foot
 Architecture: any
+Provides: x-terminal-emulator
 Depends: ${misc:Depends}, ${shlibs:Depends}, foot-terminfo (>= 1.5.3-4)
 Suggests: foot-themes
 Description: Fast, lightweight and minimalistic Wayland terminal emulator
