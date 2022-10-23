@@ -16,6 +16,8 @@ Build-Depends: debhelper-compat (= 13),
                libfcft-dev (>= 3.0.0),
                libffi-dev,
                libharfbuzz-dev,
+               libutf8proc-dev,
+               systemd [linux-any],
                scdoc
 Standards-Version: 4.6.1.0
 Homepage: https://codeberg.org/dnkl/foot
