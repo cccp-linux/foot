@@ -1,3 +1,32 @@
+foot (1.13.1-2) unstable; urgency=medium
+
+  [ Andrea Pappacoda ]
+  * d/control: enable grapheme clustering (Closes: #1022533)
+  * d/control: add systemd to the list of Build-Dependencies, as upstream's
+    build process only installs systemd unit files if systemd's pkg-config
+    file is installed on the build machine (Closes: #1022379)
+  * d/rules: build with PGO.
+    Upstream makes using profile-guided optimizations extremely easy, and
+    encourages packagers to do so. Building with PGO allows foot to be
+    able to offer slightly better latency.
+  * d/patches: backport patch for GCC detection in PGO script and add patch to
+    make PGO script more verbose
+  * d/control: provide x-terminal-emulator.
+    Foot is Wayland-only, but an "X terminal emulator" is simply a graphical
+    terminal emulator; the Policy refers to X specifically because it has been
+    _the_ synonym of graphical for decades. This is also why foot is in
+    Section: x11
+    Policy states that terminal emulator alternatives _should_ have a
+    priority of 20, and the main foot binary does. At the same time,
+    footclient is installed as an additional alternative with lower
+    priority, 10, allowing users running a foot server in the background to
+    set the lightweight client as their default terminal emulator. As the
+    foot client depends on a running server, and no such server runs by
+    default, it has a lower priority so that it won't ever be automatically
+    selected by the alternatives system.
+
+ -- Birger Schacht <birger@debian.org>  Wed, 26 Oct 2022 11:15:54 +0200
+
 foot (1.13.1-1) unstable; urgency=medium
 
   * New upstream release
