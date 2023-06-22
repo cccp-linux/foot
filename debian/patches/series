@@ -1,3 +1,2 @@
 0001-Set-zsh_install_dir-to-vendor-completions.patch
-pgo-fix-gcc-detection.patch
 verbose-pgo.patch

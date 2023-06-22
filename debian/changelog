@@ -1,3 +1,14 @@
+foot (1.14.0-1) unstable; urgency=medium
+
+  * New upstream release
+  * d/patches: drop backported GCC detection patch (included upstream)
+  * d/control:
+   + Bump standards version to 4.6.2 (no changes required)
+   + Switch from libfreetype6-dev to libfreetype-dev
+  * d/copyright: Bump years
+
+ -- Birger Schacht <birger@debian.org>  Thu, 22 Jun 2023 21:17:46 +0200
+
 foot (1.13.1-2) unstable; urgency=medium
 
   [ Andrea Pappacoda ]

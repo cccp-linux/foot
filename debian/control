@@ -9,7 +9,7 @@ Build-Depends: debhelper-compat (= 13),
                libxkbcommon-dev,
                pkg-config,
                libpixman-1-dev,
-               libfreetype6-dev,
+               libfreetype-dev,
                libfontconfig-dev,
                libwayland-dev,
                libtllist-dev (>= 1.0.4),
@@ -19,7 +19,7 @@ Build-Depends: debhelper-compat (= 13),
                libutf8proc-dev,
                systemd [linux-any],
                scdoc
-Standards-Version: 4.6.1.0
+Standards-Version: 4.6.2
 Homepage: https://codeberg.org/dnkl/foot
 Rules-Requires-Root: no
 Vcs-Git: https://salsa.debian.org/birger/foot.git
