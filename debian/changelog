@@ -1,3 +1,10 @@
+foot (1.15.0-1) unstable; urgency=medium
+
+  * New upstream release
+  * Bump meson build-dependency to >= 0.59
+
+ -- Birger Schacht <birger@debian.org>  Tue, 18 Jul 2023 21:03:18 +0200
+
 foot (1.14.0-1) unstable; urgency=medium
 
   * New upstream release
