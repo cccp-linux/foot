@@ -28,7 +28,7 @@ Vcs-Browser: https://salsa.debian.org/birger/foot
 Package: foot
 Architecture: any
 Provides: x-terminal-emulator
-Depends: ${misc:Depends}, ${shlibs:Depends}, foot-terminfo (>= 1.5.3-4)
+Depends: ${misc:Depends}, ${shlibs:Depends}, ncurses-term (>= 6.4+20230625-2)
 Suggests: foot-themes
 Description: Fast, lightweight and minimalistic Wayland terminal emulator
  The fast, lightweight and minimalistic Wayland terminal emulator.
@@ -51,11 +51,11 @@ Package: foot-terminfo
 Replaces: foot (<< 1.5.3-2)
 Breaks: foot (<< 1.5.3-2)
 Architecture: all
-Depends: ${misc:Depends}, ${shlibs:Depends}
+Depends: ${misc:Depends}, ncurses-term (>= 6.4+20230625-2)
+Section: oldlibs
 Description: Fast, lightweight and minimalistic Wayland terminal emulator (terminfo files)
- The fast, lightweight and minimalistic Wayland terminal emulator.
- .
- This package contains the terminfo files for foot.
+ This is a transitional package. It can safely be removed.
+ The foot terminfo files are now shipped by ncurses-term.
 
 Package: foot-themes
 Architecture: all

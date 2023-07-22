@@ -1,3 +1,10 @@
+foot (1.15.1-2) unstable; urgency=medium
+
+  * Make foot-terminfo a transitional package and use ncurses-term instead
+    (Closes: #1041685)
+
+ -- Birger Schacht <birger@debian.org>  Mon, 24 Jul 2023 14:06:42 +0200
+
 foot (1.15.1-1) unstable; urgency=medium
 
   * New upstream release
