@@ -1,3 +1,11 @@
+foot (1.15.3-1) unstable; urgency=medium
+
+  * New upstream release
+  * Add d/gbp.conf to specify debian branch
+  * Add d/gitlab-ci.yml to configure & run CI
+
+ -- Birger Schacht <birger@debian.org>  Tue, 15 Aug 2023 09:34:04 +0200
+
 foot (1.15.1-2) unstable; urgency=medium
 
   * Make foot-terminfo a transitional package and use ncurses-term instead
