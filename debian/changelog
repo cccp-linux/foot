@@ -1,3 +1,11 @@
+foot (1.15.3-2) unstable; urgency=medium
+
+  * debian/patches/0002-dcs-xtgettcap-ignore-queries.patch:
+    Backport patch to ignore XTGETTCAP queries with invalid hex encodings
+    (Closes: #1053115)
+
+ -- Birger Schacht <birger@debian.org>  Wed, 27 Sep 2023 18:49:57 +0200
+
 foot (1.15.3-1) unstable; urgency=medium
 
   * New upstream release
