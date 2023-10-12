@@ -1,3 +1,11 @@
+foot (1.16.0-1) unstable; urgency=medium
+
+  * New upstream release
+  * Drop backported patch:
+    debian/patches/0002-dcs-xtgettcap-ignore-queries.patch
+
+ -- Birger Schacht <birger@debian.org>  Thu, 12 Oct 2023 15:28:18 +0200
+
 foot (1.15.3-2) unstable; urgency=medium
 
   * debian/patches/0002-dcs-xtgettcap-ignore-queries.patch:
