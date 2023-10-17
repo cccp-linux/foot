@@ -1,3 +1,13 @@
+foot (1.16.2-1) unstable; urgency=medium
+
+  * New upstream release
+
+  [ Helmut Grohne ]
+  * Fix FTCBFS: Support DEB_BUILD_OPTIONS=nopgo and enable it for cross.
+    (Closes: #1051800)
+
+ -- Birger Schacht <birger@debian.org>  Tue, 17 Oct 2023 18:32:56 +0200
+
 foot (1.16.1-1) unstable; urgency=medium
 
   * New upstream release
