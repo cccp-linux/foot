@@ -1,13 +1,18 @@
-Description: Build verbosely in PGO script
-Author: Andrea Pappacoda <andrea@pappacoda.it>
-Forwarded: not-needed
-Last-Update: 2022-10-23
+From eb1f31adf4ca8afa7889481b0fdac84dc1a35db7 Mon Sep 17 00:00:00 2001
+From: Birger Schacht <birger@debian.org>
+Date: Wed, 3 Apr 2024 17:28:59 +0200
+Subject: [PATCH] Build verbosely in PGO script
+
+Update patch to build verbosely in PGO script for v1.17.0
+---
+ pgo/pgo.sh | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
 
 diff --git a/pgo/pgo.sh b/pgo/pgo.sh
-index b2ce7fe..30cb8ec 100755
+index b59f5c21..a65b5aea 100755
 --- a/pgo/pgo.sh
 +++ b/pgo/pgo.sh
-@@ -94,7 +94,7 @@ if [ ${do_pgo} = yes ]; then
+@@ -95,7 +95,7 @@ if [ ${do_pgo} = yes ]; then
           -delete
  
      meson configure "${blddir}" -Db_pgo=generate
@@ -15,10 +20,13 @@ index b2ce7fe..30cb8ec 100755
 +    ninja -C "${blddir}" -v
  
      # If fcft/tllist are subprojects, we need to ensure their tests
-     # have been executed, or we’ll get “profile count data file not
-@@ -114,4 +114,4 @@ if [ ${do_pgo} = yes ]; then
+     # have been executed, or we'll get "profile count data file not
+@@ -115,4 +115,4 @@ if [ ${do_pgo} = yes ]; then
      meson configure "${blddir}" -Db_pgo=use
  fi
  
 -ninja -C "${blddir}"
 +ninja -C "${blddir}" -v
+-- 
+2.43.0
+

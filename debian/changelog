@@ -1,3 +1,11 @@
+foot (1.17.0-1) unstable; urgency=medium
+
+  * New upstream release
+  * d/control: replace build-dep on pkg-config with pkgconf
+  * d/patches: update pgo verbose patch
+
+ -- Birger Schacht <birger@debian.org>  Wed, 03 Apr 2024 17:23:25 +0200
+
 foot (1.16.2-2) unstable; urgency=medium
 
   * d/control: Replace systemd dependency with systemd-dev (Closes: #1060496)
