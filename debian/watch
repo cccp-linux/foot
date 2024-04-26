@@ -1,2 +1,3 @@
 version=4
-https://codeberg.org/dnkl/foot/releases .*/v?(\d\S+)\.tar\.gz
+opts="mode=git" \
+https://codeberg.org/dnkl/foot refs/tags/v?(\d\S+)

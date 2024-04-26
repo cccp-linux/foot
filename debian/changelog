@@ -1,3 +1,9 @@
+foot (1.17.2-2) unstable; urgency=medium
+
+  * Fix d/watch by switching to git mode
+
+ -- Birger Schacht <birger@debian.org>  Fri, 26 Apr 2024 11:55:44 +0200
+
 foot (1.17.2-1) unstable; urgency=medium
 
   * New usptream release
