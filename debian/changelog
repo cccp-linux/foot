@@ -1,3 +1,10 @@
+foot (1.17.2-3) unstable; urgency=medium
+
+  * Add patch to force foot not to pass an argument to the utmp helper
+    (Closes: #1076755)
+
+ -- Birger Schacht <birger@debian.org>  Tue, 23 Jul 2024 15:04:50 +0200
+
 foot (1.17.2-2) unstable; urgency=medium
 
   * Fix d/watch by switching to git mode
