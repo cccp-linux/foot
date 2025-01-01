@@ -23,7 +23,7 @@ export DEB_BUILD_MAINT_OPTIONS = hardening=+all optimize=-lto
 override_dh_auto_configure:
 
 override_dh_auto_build:
-	./pgo/pgo.sh partial . build --prefix=/usr --wrap-mode=nodownload
+	./pgo/pgo.sh partial . build --prefix=/usr --wrap-mode=nodownload -Dterminfo-base-name=foot-extra
 endif
 
 execute_after_dh_auto_install:

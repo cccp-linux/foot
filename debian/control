@@ -64,3 +64,11 @@ Description: Fast, lightweight and minimalistic Wayland terminal emulator (theme
  The fast, lightweight and minimalistic Wayland terminal emulator.
  .
  This package contains theme files for foot.
+
+Package: foot-extra-terminfo
+Architecture: all
+Depends: ${misc:Depends}
+Description: Fast, lightweight and minimalistic Wayland terminal emulator (extra terminfo files)
+ The fast, lightweight and minimalistic Wayland terminal emulator.
+ .
+ This package contains extra terminfo files for foot.

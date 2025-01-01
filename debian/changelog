@@ -1,3 +1,9 @@
+foot (1.20.2-2) experimental; urgency=medium
+
+  * Introduce foot-extra-terminfo package (Closes: #1090821)
+
+ -- Birger Schacht <birger@debian.org>  Sat, 25 Jan 2025 10:07:46 +0100
+
 foot (1.20.2-1) unstable; urgency=medium
 
   * New upstream release
