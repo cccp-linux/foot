@@ -1,3 +1,9 @@
+foot (1.20.1-1) unstable; urgency=medium
+
+  * New upstream release (Closes: #1092355)
+
+ -- Birger Schacht <birger@debian.org>  Wed, 08 Jan 2025 14:52:37 +0100
+
 foot (1.20.0-1) unstable; urgency=medium
 
   * New upstream release
