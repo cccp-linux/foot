@@ -1,3 +1,9 @@
+foot (1.20.2-3) unstable; urgency=medium
+
+  * Reupload to unstable
+
+ -- Birger Schacht <birger@debian.org>  Mon, 27 Jan 2025 13:41:32 +0100
+
 foot (1.20.2-2) experimental; urgency=medium
 
   * Introduce foot-extra-terminfo package (Closes: #1090821)
