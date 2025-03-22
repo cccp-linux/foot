@@ -1,3 +1,11 @@
+foot (1.21.0-1) unstable; urgency=medium
+
+  * New upstream release
+  * debian/control: bump version constraint fcft-dev to >= 3.3.1 and set
+    version constraint of wayland-protocols to >= 1.41
+
+ -- Birger Schacht <birger@debian.org>  Sat, 22 Mar 2025 10:42:55 +0100
+
 foot (1.20.2-3) unstable; urgency=medium
 
   * Reupload to unstable
