@@ -1,4 +1,3 @@
 0001-Set-zsh_install_dir-to-vendor-completions.patch
 0002-fix-disable-utmp-del-argument-even-for-libutempter.patch
 verbose-pgo.patch
-0003-edge-constraints.patch

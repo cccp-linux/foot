@@ -1,3 +1,10 @@
+foot (1.23.1-1) unstable; urgency=medium
+
+  * New upstream release
+  * Drop 0003-edge-constraints.patch
+
+ -- Birger Schacht <birger@debian.org>  Sat, 16 Aug 2025 17:19:07 +0200
+
 foot (1.21.0-2) unstable; urgency=medium
 
   * Backport patch to handle xdg-shell edge constraints to
