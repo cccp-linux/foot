@@ -1,3 +1,12 @@
+foot (1.24.0-1) unstable; urgency=medium
+
+  * New upstream release
+  * Update debian/watch to version 5 format
+  * Drop 0002-fix-disable-utmp-del-argument-even-for-libutempter.patch,
+    because the fix has been included upstream
+
+ -- Birger Schacht <birger@debian.org>  Sun, 14 Sep 2025 17:54:23 +0200
+
 foot (1.23.1-1) unstable; urgency=medium
 
   * New upstream release
