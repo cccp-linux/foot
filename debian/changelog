@@ -1,3 +1,11 @@
+foot (1.27.0-1) unstable; urgency=medium
+
+  * New upstream release (Closes: #1128543)
+  * debian/control:
+   + Bump Standards-Version to 4.7.4 (no changes required)
+
+ -- Birger Schacht <birger@debian.org>  Fri, 15 May 2026 16:11:48 +0200
+
 foot (1.26.1-1) unstable; urgency=medium
 
   * New upstream release

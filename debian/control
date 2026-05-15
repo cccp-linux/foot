@@ -18,7 +18,7 @@ Build-Depends: debhelper-compat (= 13),
                libutf8proc-dev,
                systemd-dev,
                scdoc
-Standards-Version: 4.7.3
+Standards-Version: 4.7.4
 Homepage: https://codeberg.org/dnkl/foot
 Vcs-Git: https://salsa.debian.org/birger/foot.git
 Vcs-Browser: https://salsa.debian.org/birger/foot
