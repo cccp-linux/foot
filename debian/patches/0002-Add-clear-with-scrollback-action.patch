@@ -1,0 +1,67 @@
+From 3e272e534f5476771364db6ea7a81e4b84086423 Mon Sep 17 00:00:00 2001
+From: Dimitry Ishenko <dimitry.ishenko@gmail.com>
+Date: Sun, 7 Jun 2026 12:09:41 -0400
+Subject: [PATCH] Add clear-with-scrollback action
+
+---
+ config.c      | 1 +
+ input.c       | 9 +++++++++
+ key-binding.h | 3 ++-
+ 3 files changed, 12 insertions(+), 1 deletion(-)
+
+diff --git a/config.c b/config.c
+index 481d4c4f..8ba2c61c 100644
+--- a/config.c
++++ b/config.c
+@@ -147,6 +147,7 @@ static const char *const binding_action_map[] = {
+     [BIND_ACTION_THEME_SWITCH_DARK] = "color-theme-switch-dark",
+     [BIND_ACTION_THEME_SWITCH_LIGHT] = "color-theme-switch-light",
+     [BIND_ACTION_THEME_TOGGLE] = "color-theme-toggle",
++    [BIND_ACTION_CLEAR_WITH_SCROLLBACK] = "clear-with-scrollback",
+ 
+     /* Mouse-specific actions */
+     [BIND_ACTION_SCROLLBACK_UP_MOUSE] = "scrollback-up-mouse",
+diff --git a/input.c b/input.c
+index 6a829a70..74a936ef 100644
+--- a/input.c
++++ b/input.c
+@@ -177,6 +177,15 @@ execute_binding(struct seat *seat, struct terminal *term,
+         }
+         break;
+ 
++    case BIND_ACTION_CLEAR_WITH_SCROLLBACK:
++        if (term->grid == &term->normal) {
++            for (int i = 0; i < term->rows - 1; ++i)
++                term_linefeed(term);
++            term_to_slave(term, "\014", 1);
++            return true;
++        }
++        break;
++
+     case BIND_ACTION_CLIPBOARD_COPY:
+         selection_to_clipboard(seat, term, serial);
+         return true;
+diff --git a/key-binding.h b/key-binding.h
+index c4a04e99..946f555e 100644
+--- a/key-binding.h
++++ b/key-binding.h
+@@ -48,6 +48,7 @@ enum bind_action_normal {
+     BIND_ACTION_THEME_SWITCH_DARK,
+     BIND_ACTION_THEME_SWITCH_LIGHT,
+     BIND_ACTION_THEME_TOGGLE,
++    BIND_ACTION_CLEAR_WITH_SCROLLBACK,
+ 
+     /* Mouse specific actions - i.e. they require a mouse coordinate */
+     BIND_ACTION_SCROLLBACK_UP_MOUSE,
+@@ -61,7 +62,7 @@ enum bind_action_normal {
+     BIND_ACTION_SELECT_QUOTE,
+     BIND_ACTION_SELECT_ROW,
+ 
+-    BIND_ACTION_KEY_COUNT = BIND_ACTION_THEME_TOGGLE + 1,
++    BIND_ACTION_KEY_COUNT = BIND_ACTION_CLEAR_WITH_SCROLLBACK + 1,
+     BIND_ACTION_COUNT = BIND_ACTION_SELECT_ROW + 1,
+ };
+ 
+-- 
+2.53.0
+

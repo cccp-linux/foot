@@ -1,2 +1,4 @@
 0001-Set-zsh_install_dir-to-vendor-completions.patch
 verbose-pgo.patch
+0002-Add-clear-with-scrollback-action.patch
+0003-meson-bump-version-to-1.27.0.1.patch

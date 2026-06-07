@@ -1,0 +1,23 @@
+From 247494d2394357c1a3c9b7609209f2f6cdfdecc6 Mon Sep 17 00:00:00 2001
+From: Dimitry Ishenko <dimitry.ishenko@gmail.com>
+Date: Mon, 22 Jun 2026 14:45:48 -0400
+Subject: [PATCH] meson: bump version to 1.27.0.1
+
+---
+ meson.build | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/meson.build b/meson.build
+index e4e83302..78c28d36 100644
+--- a/meson.build
++++ b/meson.build
+@@ -1,5 +1,5 @@
+ project('foot', 'c',
+-        version: '1.27.0',
++        version: '1.27.0.1',
+         license: 'MIT',
+         meson_version: '>=0.59.0',
+         default_options: [
+--
+2.53.0
+
