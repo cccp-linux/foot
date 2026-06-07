@@ -1,0 +1,5 @@
+Version: 5
+
+Source: https://codeberg.org/dnkl/foot
+Matching-Pattern: refs/tags/@ANY_VERSION@
+Mode: git

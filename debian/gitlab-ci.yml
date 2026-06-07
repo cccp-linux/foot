@@ -1,0 +1,10 @@
+---
+include:
+  - https://salsa.debian.org/salsa-ci-team/pipeline/raw/master/recipes/debian.yml
+
+variables:
+  SALSA_CI_GBP_BUILDPACKAGE_ARGS: "--git-overlay"
+  # foot currently does not build reproducible, see
+  # https://tests.reproducible-builds.org/debian/rb-pkg/unstable/amd64/foot.html
+  # So disable it for now
+  SALSA_CI_DISABLE_REPROTEST: "true"

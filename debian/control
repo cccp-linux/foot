@@ -1,0 +1,72 @@
+Source: foot
+Section: x11
+Maintainer: Birger Schacht <birger@debian.org>
+Build-Depends: debhelper-compat (= 13),
+               meson (>= 0.59),
+               ninja-build,
+               wayland-protocols (>= 1.41),
+               libxkbcommon-dev,
+               pkgconf,
+               libpixman-1-dev,
+               libfreetype-dev,
+               libfontconfig-dev,
+               libwayland-dev,
+               libtllist-dev (>= 1.0.4),
+               libfcft-dev (>= 3.3.1),
+               libffi-dev,
+               libharfbuzz-dev,
+               libutf8proc-dev,
+               systemd-dev,
+               scdoc
+Standards-Version: 4.7.4
+Homepage: https://codeberg.org/dnkl/foot
+Vcs-Git: https://salsa.debian.org/birger/foot.git
+Vcs-Browser: https://salsa.debian.org/birger/foot
+
+Package: foot
+Architecture: any
+Provides: x-terminal-emulator
+Depends: ${misc:Depends}, ${shlibs:Depends}, ncurses-term (>= 6.4+20230625-2)
+Suggests: foot-themes
+Description: Fast, lightweight and minimalistic Wayland terminal emulator
+ The fast, lightweight and minimalistic Wayland terminal emulator.
+ Features
+ .
+  * Fast
+  * Lightweight, in dependencies, on-disk and in-memory
+  * Wayland native
+  * DE agnostic
+  * User configurable font fallback
+  * On-the-fly DPI font size adjustment
+  * Scrollback search
+  * Color emoji support
+  * Server/daemon mode
+  * Multi-seat
+  * Synchronized Updates support
+  * Sixel image support
+
+Package: foot-terminfo
+Replaces: foot (<< 1.5.3-2)
+Breaks: foot (<< 1.5.3-2)
+Architecture: all
+Depends: ${misc:Depends}, ncurses-term (>= 6.4+20230625-2)
+Section: oldlibs
+Description: Fast, lightweight and minimalistic Wayland terminal emulator (terminfo files)
+ This is a transitional package. It can safely be removed.
+ The foot terminfo files are now shipped by ncurses-term.
+
+Package: foot-themes
+Architecture: all
+Depends: ${misc:Depends}, ${shlibs:Depends}
+Description: Fast, lightweight and minimalistic Wayland terminal emulator (theme files)
+ The fast, lightweight and minimalistic Wayland terminal emulator.
+ .
+ This package contains theme files for foot.
+
+Package: foot-extra-terminfo
+Architecture: all
+Depends: ${misc:Depends}
+Description: Fast, lightweight and minimalistic Wayland terminal emulator (extra terminfo files)
+ The fast, lightweight and minimalistic Wayland terminal emulator.
+ .
+ This package contains extra terminfo files for foot.
