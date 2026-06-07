@@ -177,6 +177,15 @@ execute_binding(struct seat *seat, struct terminal *term,
         }
         break;
 
+    case BIND_ACTION_CLEAR_WITH_SCROLLBACK:
+        if (term->grid == &term->normal) {
+            for (int i = 0; i < term->rows - 1; ++i)
+                term_linefeed(term);
+            term_to_slave(term, "\014", 1);
+            return true;
+        }
+        break;
+
     case BIND_ACTION_CLIPBOARD_COPY:
         selection_to_clipboard(seat, term, serial);
         return true;

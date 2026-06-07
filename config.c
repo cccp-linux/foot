@@ -147,6 +147,7 @@ static const char *const binding_action_map[] = {
     [BIND_ACTION_THEME_SWITCH_DARK] = "color-theme-switch-dark",
     [BIND_ACTION_THEME_SWITCH_LIGHT] = "color-theme-switch-light",
     [BIND_ACTION_THEME_TOGGLE] = "color-theme-toggle",
+    [BIND_ACTION_CLEAR_WITH_SCROLLBACK] = "clear-with-scrollback",
 
     /* Mouse-specific actions */
     [BIND_ACTION_SCROLLBACK_UP_MOUSE] = "scrollback-up-mouse",
