@@ -1,3 +1,12 @@
+foot (1.27.0.1-1) unstable; urgency=medium
+
+  * Non-maintainer upload.
+  * Add Debian release workflow
+  * d/patches: add patches for clear-with-scrollback
+  * d/watch: revert to original tarball
+
+ -- Dimitry Ishenko <dimitry.ishenko@gmail.com>  Mon, 22 Jun 2026 20:20:35 -0400
+
 foot (1.27.0-1) unstable; urgency=medium
 
   * New upstream release (Closes: #1128543)
