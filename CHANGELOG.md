@@ -1,5 +1,6 @@
 # Changelog
 
+* [1.28.0](#1-28-0)
 * [1.27.0](#1-27-0)
 * [1.26.1](#1-26-1)
 * [1.26.0](#1-26-0)
@@ -67,6 +68,129 @@
 * [1.2.2](#1-2-2)
 * [1.2.1](#1-2-1)
 * [1.2.0](#1-2-0)
+
+
+## 1.28.0
+
+### Added
+
+* Command line option `--class`, an alias for `--app-id`. Intended to
+  be used by scripts and similar that wants to launch terminal
+  instances in a terminal agnostic way ([#2368][2368]).
+* Support for [terminal visibility
+  reports](https://rockorager.dev/misc/visibility-reports/), using the
+  Wayland `xdg_toplevel` suspended state.
+* Support for `wl_fixes::ack_global_remove()`.
+
+[2368]: https://codeberg.org/dnkl/foot/issues/2368
+
+
+### Changed
+
+* Do not allow codepoints to be merged into grapheme clusters directly
+  after a cursor move ([#2383][2383]).
+* Dracula theme updated to latest official, and light theme alucard
+  added.
+* Sixels: pan/pad clamped to 5 ([#2371][2371]).
+* Default URL regex changed to:
+  + allow single quotes (`'`) _inside_ the URL (but not at the end,
+    unless balanced).
+  + require at least one character inside balanced `[]`, `()`, `''` or
+    `""`.
+  ([#2417][2417]).
+* Foot now sets window urgency when a notification is activated, and
+  foot hasn't received an XDG activation token.
+* `-D,--working-directory` now supports `file://` URIs.
+
+[2383]: https://codeberg.org/dnkl/foot/issues/2383
+[2371]: https://codeberg.org/dnkl/foot/issues/2371
+[2417]: https://codeberg.org/dnkl/foot/issues/2417
+
+
+### Removed
+
+* `[colors]` and `[colors2]` config sections, and the corresponding
+  `color-theme-switch-1` and `color-theme-switch-2` key
+  bindings.
+
+  These were deprecated in 1.26.0, and were replaced by
+  `[colors-dark]`, `[colors-light]`, `color-theme-switch-dark` and
+  `color-theme-switch-light`.
+
+### Fixed
+
+* Out-of-bounds read when parsing URIs with malformed %-encoded
+  content ([#2353][2353]).
+* DECCRA not clamping or verifying the destination rectangle
+  ([#2352][2352]).
+* Empty selection clearing the clipboard ([#2327][2327]).
+* Require xkbcommon >= 1.6.0. This has been the case for a while, due
+  to our use of `XKB_KEYSYM_MAX`. Now it is formalized in
+  `meson.build` ([#2379][2379]).
+* Block selection area incorrectly updated when selecting back
+  across the starting column.
+* Passing a very large value as CHT/CBT argument hangs the terminal
+  ([#2360][2360]).
+* Sixel: crash when using a shared palette and gamma-correct blending
+  has been enabled, or foot is using 10-bit surface ([#2370][2370]).
+* Kitty text-size protocol: fix crash when text is zero-length
+  ([#2364][2364]).
+* Escape quotes in file names being DnD:ed on the command line
+  ([#2363][2363]).
+* Crash in `--server` mode, when a tracked notification is closed
+  after the associated terminal instance has been closed
+  ([#2397][2397]).
+* Incorrect word boundary detection when selection words with a
+  multi-column character in the last column ([#2411][2411]).
+* `reallocarray()` is no longer required, so as to support platforms
+  where libc doesn't include it (e.g. Termux + Android API < 29).
+* Crash in `select-quote` when the right-side quote appeared right
+  after a newline, in column 0 ([#2405][2405]).
+* Resizing a terminal window may break current selection.
+* Crash when closing a window that touch input focus.
+* Application mouse grabbing not working when there is no keymap
+  available.
+* Crash when a buggy compositor sends a `keyboard_enter()` event with
+  a `NULL` surface ([#2438][2438]).
+* Crash when clicking without moving the mouse after resizing the
+  window, and the clicked area is now outside the cell grid
+  ([#2435][2435]).
+* Modifiers in mouse-bindings colliding with the modifiers in
+  `selection-override-modifiers` not always detected.
+* `selection-override-modifiers=none` preventing applications from
+  grabbing the mouse.
+
+[2353]: https://codeberg.org/dnkl/foot/issues/2353
+[2352]: https://codeberg.org/dnkl/foot/issues/2352
+[2327]: https://codeberg.org/dnkl/foot/issues/2327
+[2379]: https://codeberg.org/dnkl/foot/issues/2379
+[2360]: https://codeberg.org/dnkl/foot/issues/2360
+[2370]: https://codeberg.org/dnkl/foot/issues/2370
+[2364]: https://codeberg.org/dnkl/foot/issues/2364
+[2363]: https://codeberg.org/dnkl/foot/issues/2363
+[2397]: https://codeberg.org/dnkl/foot/issues/2397
+[2411]: https://codeberg.org/dnkl/foot/issues/2411
+[2405]: https://codeberg.org/dnkl/foot/issues/2405
+[2438]: https://codeberg.org/dnkl/foot/issues/2438
+[2435]: https://codeberg.org/dnkl/foot/issues/2435
+
+
+### Contributors
+
+* 0WD0
+* airkoala
+* aloires
+* Campbell Barton
+* CismonX
+* Craig Barnes
+* Emily Vlasics
+* fhqh
+* K4
+* koru
+* lumerue
+* Marinus Klasen
+* sentriz
+* Tim Culverhouse
 
 
 ## 1.27.0

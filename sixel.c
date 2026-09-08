@@ -169,10 +169,10 @@ sixel_init(struct terminal *term, int p1, int p2, int p3)
 
             if (term->sixel.linear_blending || term->sixel.use_10bit) {
                 for (size_t i = 0; i < active_palette_entries; i++) {
-                    uint8_t r = (term->sixel.private_palette[i] >> 16) & 0xff;
-                    uint8_t g = (term->sixel.private_palette[i] >> 8) & 0xff;
-                    uint8_t b = (term->sixel.private_palette[i] >> 0) & 0xff;
-                    term->sixel.private_palette[i] = color_decode_srgb(term, r, g, b);
+                    uint8_t r = (term->sixel.shared_palette[i] >> 16) & 0xff;
+                    uint8_t g = (term->sixel.shared_palette[i] >> 8) & 0xff;
+                    uint8_t b = (term->sixel.shared_palette[i] >> 0) & 0xff;
+                    term->sixel.shared_palette[i] = color_decode_srgb(term, r, g, b);
                 }
             }
         } else {
@@ -1888,8 +1888,8 @@ decgra(struct terminal *term, uint8_t c)
         unsigned ph = nparams > 2 ? term->sixel.params[2] : 0;
         unsigned pv = nparams > 3 ? term->sixel.params[3] : 0;
 
-        pan = pan > 0 ? pan : 1;
-        pad = pad > 0 ? pad : 1;
+        pan = pan > 0 ? min(pan, 5) : 1;
+        pad = pad > 0 ? min(pad, 5) : 1;
 
         if (likely(term->sixel.image.width == 0 &&
                    term->sixel.image.height == 0))

@@ -871,7 +871,7 @@ xdg_toplevel_configure(void *data, struct xdg_toplevel *xdg_toplevel,
     bool is_constrained_bottom = false;
     bool is_constrained_left = false;
     bool is_constrained_right = false;
-    bool is_suspended UNUSED = false;
+    bool is_suspended = false;
 
 #if defined(LOG_ENABLE_DBG) && LOG_ENABLE_DBG
     char state_str[2048];
@@ -951,6 +951,7 @@ xdg_toplevel_configure(void *data, struct xdg_toplevel *xdg_toplevel,
     struct wl_window *win = data;
 
     win->configure.is_activated = is_activated;
+    win->configure.is_suspended = is_suspended;
     win->configure.is_fullscreen = is_fullscreen;
     win->configure.is_maximized = is_maximized;
     win->configure.is_resizing = is_resizing;
@@ -1078,6 +1079,7 @@ xdg_surface_configure(void *data, struct xdg_surface *xdg_surface,
     bool wasnt_configured = !win->is_configured;
     bool was_resizing = win->is_resizing;
     bool was_fullscreen = win->is_fullscreen;
+    bool was_suspended = win->is_suspended;
     bool csd_was_enabled = win->csd_mode == CSD_YES && !win->is_fullscreen;
     int new_width = win->configure.width;
     int new_height = win->configure.height;
@@ -1086,6 +1088,7 @@ xdg_surface_configure(void *data, struct xdg_surface *xdg_surface,
     win->is_maximized = win->configure.is_maximized;
     win->is_fullscreen = win->configure.is_fullscreen;
     win->is_resizing = win->configure.is_resizing;
+    win->is_suspended = win->configure.is_suspended;
 
     win->is_tiled_top = win->configure.is_tiled_top;
     win->is_tiled_bottom = win->configure.is_tiled_bottom;
@@ -1147,6 +1150,9 @@ xdg_surface_configure(void *data, struct xdg_surface *xdg_surface,
         term_visual_focus_in(term);
     else
         term_visual_focus_out(term);
+
+    if (was_suspended != win->is_suspended && term->visibility_reports)
+        term_send_visibility_report(term);
 
     /*
      * Update opaque region if fullscreen state changed, also need to
@@ -1536,10 +1542,10 @@ handle_global(void *data, struct wl_registry *registry,
         const uint32_t preferred = required;
 #endif
 
-        wayl->shape_manager_version = min(required, preferred);
+        wayl->shape_manager_version = min(version, preferred);
         wayl->cursor_shape_manager = wl_registry_bind(
             wayl->registry, name, &wp_cursor_shape_manager_v1_interface,
-            min(required, preferred));
+            wayl->shape_manager_version);
     }
 
     else if (streq(interface, wp_single_pixel_buffer_manager_v1_interface.name)) {
@@ -1581,6 +1587,24 @@ handle_global(void *data, struct wl_registry *registry,
         wp_color_manager_v1_add_listener(
             wayl->color_management.manager, &color_manager_listener, wayl);
     }
+
+#if defined(WL_FIXES_INTERFACE)
+    else if (streq(interface, wl_fixes_interface.name)) {
+        const uint32_t required = 1;
+        if (!verify_iface_version(interface, version, required))
+            return;
+
+#if defined(WL_FIXES_ACK_GLOBAL_REMOVE_SINCE_VERSION)
+        const uint32_t preferred = WL_FIXES_ACK_GLOBAL_REMOVE_SINCE_VERSION;
+#else
+        const uint32_t preferred = required;
+#endif
+
+        wayl->fixes_version = min(version, preferred);
+        wayl->fixes = wl_registry_bind(
+            wayl->registry, name, &wl_fixes_interface, wayl->fixes_version);
+    }
+#endif
 
 #if defined(HAVE_XDG_TOPLEVEL_TAG)
     else if (streq(interface, xdg_toplevel_tag_manager_v1_interface.name)) {
@@ -1672,7 +1696,7 @@ handle_global_remove(void *data, struct wl_registry *registry, uint32_t name)
 
         monitor_destroy(mon);
         tll_remove(wayl->monitors, it);
-        return;
+        goto ack_remove;
     }
 
     /* A seat? */
@@ -1706,10 +1730,20 @@ handle_global_remove(void *data, struct wl_registry *registry, uint32_t name)
 
         seat_destroy(seat);
         tll_remove(wayl->seats, it);
-        return;
+        goto ack_remove;
     }
 
     LOG_WARN("unknown global removed: 0x%08x", name);
+
+ack_remove:
+    ;
+#if defined(WL_FIXES_ACK_GLOBAL_REMOVE_SINCE_VERSION)
+    if (wayl->fixes != NULL &&
+        wayl->fixes_version >= WL_FIXES_ACK_GLOBAL_REMOVE_SINCE_VERSION)
+    {
+        wl_fixes_ack_global_remove(wayl->fixes, wayl->registry, name);
+    }
+#endif
 }
 
 static const struct wl_registry_listener registry_listener = {
@@ -1981,6 +2015,10 @@ wayl_destroy(struct wayland *wayl)
         wl_subcompositor_destroy(wayl->sub_compositor);
     if (wayl->compositor != NULL)
         wl_compositor_destroy(wayl->compositor);
+#if defined(WL_FIXES_INTERFACE)
+    if (wayl->fixes != NULL)
+        wl_fixes_destroy(wayl->fixes);
+#endif
     if (wayl->registry != NULL)
         wl_registry_destroy(wayl->registry);
     if (wayl->fd != -1)
@@ -2197,6 +2235,23 @@ wayl_win_destroy(struct wl_window *win)
         close(win->csd.move_timeout_fd);
 
     /*
+     * wl_touch has no leave event, so the unmapping below cannot drop touch
+     * focus the way it drops keyboard and pointer focus. Reset it here, or a
+     * wl_touch.up/motion dispatched from the roundtrips below runs against
+     * this window after it has been destroyed.
+     */
+    tll_foreach(term->wl->seats, it) {
+        struct seat *seat = &it->item;
+
+        if (seat->touch.surface != NULL &&
+            wl_surface_get_user_data(seat->touch.surface) == win)
+        {
+            seat->touch.state = TOUCH_STATE_IDLE;
+            seat->touch.surface = NULL;
+        }
+    }
+
+    /*
      * First, unmap all surfaces to trigger things like
      * keyboard_leave() and wl_pointer_leave().
      *
@@ -2213,6 +2268,11 @@ wayl_win_destroy(struct wl_window *win)
     if (win->scrollback_indicator.surface.surf != NULL) {
         wl_surface_attach(win->scrollback_indicator.surface.surf, NULL, 0, 0);
         wl_surface_commit(win->scrollback_indicator.surface.surf);
+    }
+
+    if (win->overlay.surface.surf != NULL) {
+        wl_surface_attach(win->overlay.surface.surf, NULL, 0, 0);
+        wl_surface_commit(win->overlay.surface.surf);
     }
 
     /* Scrollback search */

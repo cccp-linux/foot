@@ -233,6 +233,7 @@ struct grid {
      */
     struct cursor cursor;
     struct cursor saved_cursor;
+    struct attributes saved_attrs;
 
     struct row **rows;
     struct row *cur_row;
@@ -264,6 +265,7 @@ struct vt {
     char32_t last_printed;
 #if defined(FOOT_GRAPHEME_CLUSTERING)
     utf8proc_int32_t grapheme_state;
+    bool codepoint_merging_ok;
 #endif
     char32_t utf8;
     struct {
@@ -276,7 +278,6 @@ struct vt {
     uint32_t private; /* LSB=priv0, MSB=priv3 */
 
     struct attributes attrs;
-    struct attributes saved_attrs;
 
     struct {
         uint8_t *data;
@@ -438,6 +439,7 @@ struct terminal {
     bool reverse_wrap;
     bool bracketed_paste;
     bool focus_events;
+    bool visibility_reports;
     bool alt_scrolling;
     bool modify_other_keys_2;  /* True when modifyOtherKeys=2 (i.e. "CSI >4;2m") */
     enum cursor_origin origin;
@@ -522,6 +524,7 @@ struct terminal {
         bool cursor_blink:1;
         bool bracketed_paste:1;
         bool focus_events:1;
+        bool visibility_reports:1;
         bool alt_scrolling:1;
         //bool mouse_x10:1;
         bool mouse_click:1;
@@ -790,13 +793,14 @@ struct terminal {
         unsigned max_height;    /* Maximum image height, in pixels */
     } sixel;
 
-    /* TODO: wrap in a struct */
-    url_list_t urls;
-    char32_t url_keys[5];
-    bool urls_show_uri_on_jump_label;
-    struct grid *url_grid_snapshot;
-    bool ime_reenable_after_url_mode;
-    const struct config_spawn_template *url_launch;
+    struct {
+        url_list_t list;
+        char32_t keys[5];
+        bool show_uri_on_jump_label;
+        struct grid *grid_snapshot;
+        bool ime_reenable_after_url_mode;
+        const struct config_spawn_template *launch;
+    } url;
 
 #if defined(FOOT_IME_ENABLED) && FOOT_IME_ENABLED
     bool ime_enabled;
@@ -926,6 +930,7 @@ void term_restore_cursor(struct terminal *term, const struct cursor *cursor);
 
 void term_visual_focus_in(struct terminal *term);
 void term_visual_focus_out(struct terminal *term);
+void term_send_visibility_report(struct terminal *term);
 void term_kbd_focus_in(struct terminal *term);
 void term_kbd_focus_out(struct terminal *term);
 void term_mouse_down(
@@ -994,5 +999,6 @@ static inline void term_reset_grapheme_state(struct terminal *term)
 {
 #if defined(FOOT_GRAPHEME_CLUSTERING)
     term->vt.grapheme_state = 0;
+    term->vt.codepoint_merging_ok = false;
 #endif
 }

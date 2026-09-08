@@ -569,6 +569,12 @@ decset_decrst(struct terminal *term, unsigned param, bool enable)
         term->report_theme_changes = enable;
         break;
 
+    case 2033:
+        term->visibility_reports = enable;
+        if (enable)
+            term_send_visibility_report(term);
+        break;
+
     case 2048:
         if (enable)
             term_enable_size_notifications(term);
@@ -585,7 +591,7 @@ decset_decrst(struct terminal *term, unsigned param, bool enable)
             term_ime_enable(term);
         else {
             term_ime_disable(term);
-            term->ime_reenable_after_url_mode = false;
+            term->url.ime_reenable_after_url_mode = false;
         }
         break;
 
@@ -664,6 +670,7 @@ decrqm(const struct terminal *term, unsigned param)
         ? DECRPM_PERMANENTLY_RESET
         : decrpm(term->grapheme_shaping);
     case 2031: return decrpm(term->report_theme_changes);
+    case 2033: return decrpm(term->visibility_reports);
     case 2048: return decrpm(term->size_notifications);
     case 8452: return decrpm(term->sixel.cursor_right_of_graphics);
     case 737769: return decrpm(term_ime_is_enabled(term));
@@ -710,6 +717,7 @@ xtsave(struct terminal *term, unsigned param)
     case 2026: term->xtsave.app_sync_updates = term->render.app_sync_updates.enabled; break;
     case 2027: term->xtsave.grapheme_shaping = term->grapheme_shaping; break;
     case 2031: term->xtsave.report_theme_changes = term->report_theme_changes; break;
+    case 2033: term->xtsave.visibility_reports = term->visibility_reports; break;
     case 2048: term->xtsave.size_notifications = term->size_notifications; break;
     case 8452: term->xtsave.sixel_cursor_right_of_graphics = term->sixel.cursor_right_of_graphics; break;
     case 737769: term->xtsave.ime = term_ime_is_enabled(term); break;
@@ -755,6 +763,7 @@ xtrestore(struct terminal *term, unsigned param)
     case 2026: enable = term->xtsave.app_sync_updates; break;
     case 2027: enable = term->xtsave.grapheme_shaping; break;
     case 2031: enable = term->xtsave.report_theme_changes; break;
+    case 2033: enable = term->xtsave.visibility_reports; break;
     case 2048: enable = term->xtsave.size_notifications; break;
     case 8452: enable = term->xtsave.sixel_cursor_right_of_graphics; break;
     case 737769: enable = term->xtsave.ime; break;
@@ -774,7 +783,7 @@ params_to_rectangular_area(const struct terminal *term, int first_idx,
     int rel_bottom = vt_param_get(term, first_idx + 2, term->rows) - 1;
     *right = min(vt_param_get(term, first_idx + 3, term->cols) - 1, term->cols - 1);
 
-    if (rel_top > rel_bottom || *left > *right)
+    if (unlikely(rel_top > rel_bottom || *left > *right))
         return false;
 
     *top = term_row_rel_to_abs(term, rel_top);
@@ -798,7 +807,8 @@ csi_dispatch(struct terminal *term, uint8_t final)
                  * ECMA-48, the behaviour is undefined if REP was
                  * _not_ preceded by a graphical character.
                  */
-                int count = vt_param_get(term, 0, 1);
+                const size_t max_count = term->grid->num_rows * term->cols;
+                int count = min(vt_param_get(term, 0, 1), max_count);
                 LOG_DBG("REP: '%lc' %d times", (wint_t)term->vt.last_printed, count);
 
                 int width;
@@ -1171,37 +1181,40 @@ csi_dispatch(struct terminal *term, uint8_t final)
 
         case 'I': {
             /* CHT - Tab Forward (param is number of tab stops to move through) */
-            for (int i = 0; i < vt_param_get(term, 0, 1); i++) {
-                int new_col = term->cols - 1;
-                tll_foreach(term->tab_stops, it) {
-                    if (it->item > term->grid->cursor.point.col) {
-                        new_col = it->item;
+            int count = vt_param_get(term, 0, 1);
+            int new_col = term->grid->cursor.point.col;
+            tll_foreach(term->tab_stops, it) {
+                if (it->item > new_col) {
+                    if (--count < 0) {
                         break;
                     }
+                    new_col = it->item;
                 }
-                xassert(new_col >= term->grid->cursor.point.col);
-
-                bool lcf = term->grid->cursor.lcf;
-                term_cursor_right(term, new_col - term->grid->cursor.point.col);
-                term->grid->cursor.lcf = lcf;
             }
+            xassert(new_col >= term->grid->cursor.point.col);
+
+            bool lcf = term->grid->cursor.lcf;
+            term_cursor_right(term, new_col - term->grid->cursor.point.col);
+            term->grid->cursor.lcf = lcf;
             break;
         }
 
-        case 'Z':
+        case 'Z': {
             /* CBT - Back tab (param is number of tab stops to move back through) */
-            for (int i = 0; i < vt_param_get(term, 0, 1); i++) {
-                int new_col = 0;
-                tll_rforeach(term->tab_stops, it) {
-                    if (it->item < term->grid->cursor.point.col) {
-                        new_col = it->item;
+            int count = vt_param_get(term, 0, 1);
+            int new_col = term->grid->cursor.point.col;
+            tll_rforeach(term->tab_stops, it) {
+                if (it->item < new_col) {
+                    if (--count < 0) {
                         break;
                     }
+                    new_col = it->item;
                 }
-                xassert(term->grid->cursor.point.col >= new_col);
-                term_cursor_left(term, term->grid->cursor.point.col - new_col);
             }
+            xassert(term->grid->cursor.point.col >= new_col);
+            term_cursor_left(term, term->grid->cursor.point.col - new_col);
             break;
+        }
 
         case 'h':
         case 'l': {
@@ -1393,8 +1406,11 @@ csi_dispatch(struct terminal *term, uint8_t final)
                 /* 0 - icon + title, 1 - icon, 2 - title */
                 unsigned what = vt_param_get(term, 1, 0);
                 if (what == 0 || what == 2) {
-                    tll_push_back(
-                        term->window_title_stack, xstrdup(term->window_title));
+                    if (tll_length(term->window_title_stack) < 128)
+                        tll_push_back(
+                            term->window_title_stack, xstrdup(term->window_title));
+                    else
+                        LOG_WARN("window title stack depth capped at 128 entries");
                 }
                 break;
             }
@@ -1583,6 +1599,10 @@ csi_dispatch(struct terminal *term, uint8_t final)
                 term_to_slave(term, reply, chars);
                 break;
             }
+
+            case 998:
+                term_send_visibility_report(term);
+                break;
             }
             break;
         }
@@ -1766,10 +1786,10 @@ csi_dispatch(struct terminal *term, uint8_t final)
     case '<': {
         switch (final) {
         case 'u': {
-            int count = vt_param_get(term, 0, 1);
+            struct grid *grid = term->grid;
+            int count = min(vt_param_get(term, 0, 1),  ALEN(grid->kitty_kbd.flags));
             LOG_DBG("kitty kbd: popping %d levels of flags", count);
 
-            struct grid *grid = term->grid;
             uint8_t idx = grid->kitty_kbd.idx;
 
             for (int i = 0; i < count; i++) {
@@ -2005,9 +2025,8 @@ csi_dispatch(struct terminal *term, uint8_t final)
             }
 
             int src_page = vt_param_get(term, 4, 1);
-
             int dst_rel_top = vt_param_get(term, 5, 1) - 1;
-            int dst_left = vt_param_get(term, 6, 1) - 1;
+            int dst_left = min(vt_param_get(term, 6, 1) - 1, term->cols - 1);
             int dst_page = vt_param_get(term, 7, 1);
 
             if (unlikely(src_page != 1 || dst_page != 1)) {
@@ -2020,6 +2039,18 @@ csi_dispatch(struct terminal *term, uint8_t final)
 
             int dst_top = term_row_rel_to_abs(term, dst_rel_top);
             int dst_bottom = term_row_rel_to_abs(term, dst_rel_bottom);
+
+            if (unlikely(dst_left > dst_right || dst_top > dst_bottom))
+                break;
+
+            /*
+             * src validated by params_to_rectangular_area()
+             * dst validated above
+             */
+            xassert(src_bottom - src_top >= 0);
+            xassert(dst_bottom - dst_top >= 0);
+            xassert(src_right - src_left >= 0);
+            xassert(dst_right - dst_left >= 0);
 
             /* Target area outside the screen is clipped */
             const size_t row_count = min(src_bottom - src_top,
@@ -2130,6 +2161,12 @@ csi_dispatch(struct terminal *term, uint8_t final)
                slot) */
             if (slot == 0)
                 slot = term->color_stack.idx + 1;
+
+            const size_t max_slot = 128;
+            if (slot > max_slot) {
+                LOG_WARN("XTPUSHCOLORS slot index capped to 128");
+                slot = max_slot;
+            }
 
             if (term->color_stack.size < slot) {
                 const size_t new_size = slot;

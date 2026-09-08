@@ -358,8 +358,8 @@ execute_binding(struct seat *seat, struct terminal *term,
             action == BIND_ACTION_SHOW_URLS_LAUNCH ? URL_ACTION_LAUNCH :
             URL_ACTION_PERSISTENT;
 
-        urls_collect(term, url_action, &term->conf->url.preg, true, &term->urls);
-        urls_assign_key_combos(term->conf, &term->urls);
+        urls_collect(term, url_action, &term->conf->url.preg, true, &term->url.list);
+        urls_assign_key_combos(term->conf, &term->url.list);
         urls_render(term, &term->conf->url.launch);
         return true;
     }
@@ -480,8 +480,8 @@ execute_binding(struct seat *seat, struct terminal *term,
                     return true;
                 }
 
-                urls_collect(term, url_action, &regex->preg, false, &term->urls);
-                urls_assign_key_combos(term->conf, &term->urls);
+                urls_collect(term, url_action, &regex->preg, false, &term->url.list);
+                urls_assign_key_combos(term->conf, &term->url.list);
                 urls_render(term, &regex->launch);
                 return true;
             }
@@ -493,12 +493,10 @@ execute_binding(struct seat *seat, struct terminal *term,
 
         return true;
 
-    case BIND_ACTION_THEME_SWITCH_1:
     case BIND_ACTION_THEME_SWITCH_DARK:
         term_theme_switch_to_dark(term);
         return true;
 
-    case BIND_ACTION_THEME_SWITCH_2:
     case BIND_ACTION_THEME_SWITCH_LIGHT:
         term_theme_switch_to_light(term);
         return true;
@@ -704,8 +702,12 @@ static void
 keyboard_enter(void *data, struct wl_keyboard *wl_keyboard, uint32_t serial,
                struct wl_surface *surface, struct wl_array *keys)
 {
-    xassert(surface != NULL);
     xassert(serial != 0);
+
+    if (unlikely(surface == NULL)) {
+        /* Seen on Hyprland */
+        return;
+    }
 
     struct seat *seat = data;
     struct wl_window *win = wl_surface_get_user_data(surface);
@@ -2413,12 +2415,12 @@ mouse_button_state_reset(struct seat *seat)
     memset(&seat->mouse.last_time, 0, sizeof(seat->mouse.last_time));
 }
 
-static void
+ void
 mouse_coord_pixel_to_cell(struct seat *seat, const struct terminal *term,
                           int x, int y)
 {
     /*
-     * Translate x,y pixel coordinate to a cell coordinate, or -1
+     * Translate x,y pixel coordinate to a cell coordinate, or clamp
      * if the cursor is outside the grid. I.e. if it is inside the
      * margins.
      */

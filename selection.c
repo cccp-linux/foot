@@ -464,38 +464,32 @@ selection_find_word_boundary_right(const struct terminal *term, struct coord *po
     bool have_seen_word = initial_is_word;
 
     while (true) {
-        int next_col = pos->col + 1;
+        int next_col = pos->col;
         int next_row = pos->row;
 
         const struct row *row = term->grid->rows[next_row];
 
-        /* Linewrap */
-        if (next_col >= term->cols) {
-            if (row->linebreak) {
-                /* Hard linebreak, treat as space. I.e. break selection */
-                break;
-            }
-
-            next_col = 0;
-            next_row = (next_row + 1) & (grid->num_rows - 1);
-
-            if (grid_row_abs_to_sb(grid, term->rows, next_row) == 0) {
-                /* Scrollback wrap-around */
-                break;
-            }
-
-            row = grid->rows[next_row];
-        }
-
-        c = row->cells[next_col].wc;
-        while (c >= CELL_SPACER) {
+        do {
+            /* Linewrap */
             if (++next_col >= term->cols) {
-                next_col = 0;
-                if (++next_row >= term->rows)
+                if (row->linebreak) {
+                    /* Hard linebreak, treat as space. I.e. break selection */
                     return;
+                }
+
+                next_col = 0;
+                next_row = (next_row + 1) & (grid->num_rows - 1);
+
+                if (grid_row_abs_to_sb(grid, term->rows, next_row) == 0) {
+                    /* Scrollback wrap-around */
+                    return;
+                }
+
+                row = grid->rows[next_row];
             }
+
             c = row->cells[next_col].wc;
-        }
+        } while (c >= CELL_SPACER);
 
         if (c >= CELL_COMB_CHARS_LO && c <= CELL_COMB_CHARS_HI)
             c = composed_lookup(term->composed, c - CELL_COMB_CHARS_LO)->chars[0];
@@ -603,9 +597,17 @@ selection_find_quote_right(struct terminal *term, struct coord *pos, char32_t qu
 
         wc = row->cells[next_col].wc;
         if (wc == quote_char) {
-            pos->row = next_row;
-            pos->col = next_col - 1;
-            xassert(pos->col >= 0);
+            if (next_col == 0) {
+                /* Selection coordinates are view-relative, and it
+                   isn't possible to have a right-side quote with
+                   next-col == 0 AND next_row == 0 */
+                xassert(next_row > 0);
+                pos->row = next_row - 1;
+                pos->col = term->cols - 1;
+            } else {
+                pos->row = next_row;
+                pos->col = next_col - 1;
+            }
             return true;
         }
     }
@@ -793,10 +795,12 @@ pixman_region_for_coords_normal(const struct terminal *term,
 
     if (rel_start_row < rel_end_row) {
         /* First partial row (start ->)*/
-        pixman_region32_union_rect(
-            &region, &region,
-            start->col, rel_start_row,
-            term->cols - start->col, 1);
+        if (term->cols > start->col) {
+            pixman_region32_union_rect(
+                &region, &region,
+                start->col, rel_start_row,
+                term->cols - start->col, 1);
+        }
 
         /* Full rows between start and end */
         if (rel_start_row + 1 < rel_end_row) {
@@ -814,10 +818,12 @@ pixman_region_for_coords_normal(const struct terminal *term,
 
     } else if (rel_start_row > rel_end_row) {
         /* First partial row (end ->) */
-        pixman_region32_union_rect(
-            &region, &region,
-            end->col, rel_end_row,
-            term->cols - end->col, 1);
+        if (term->cols > end->col) {
+            pixman_region32_union_rect(
+                &region, &region,
+                end->col, rel_end_row,
+                term->cols - end->col, 1);
+        }
 
         /* Full rows between end and start */
         if (rel_end_row + 1 < rel_start_row) {
@@ -1145,7 +1151,7 @@ selection_update(struct terminal *term, int col, int row)
         struct coord *pivot_end = &term->selection.pivot.end;
 
         if (term->selection.kind == SELECTION_BLOCK) {
-            if (new_end.col > pivot_start->col)
+            if (new_end.col >= pivot_start->col)
                 new_direction = SELECTION_RIGHT;
             else
                 new_direction = SELECTION_LEFT;
@@ -1948,6 +1954,9 @@ static const struct zwp_primary_selection_source_v1_listener primary_selection_s
 bool
 text_to_clipboard(struct seat *seat, struct terminal *term, char *text, uint32_t serial)
 {
+    if (text == NULL || text[0] == '\0')
+        return false;
+
     xassert(serial != 0);
 
     struct wl_clipboard *clipboard = &seat->clipboard;
@@ -2095,7 +2104,16 @@ decode_one_uri(struct clipboard_receive *ctx, char *uri, size_t len)
         if (ctx->quote_paths)
             ctx->cb("'", 1, ctx->user);
 
-        ctx->cb(path, strlen(path), ctx->user);
+        char *path_remaining = path;
+        for (char *next_quote = strchr(path_remaining, '\'');
+             next_quote != NULL;
+             path_remaining = next_quote + 1,
+                 next_quote = strchr(path_remaining, '\''))
+        {
+            ctx->cb(path_remaining, next_quote - path_remaining, ctx->user);
+            ctx->cb("\\'", 2, ctx->user);
+        }
+        ctx->cb(path_remaining, strlen(path_remaining), ctx->user);
 
         if (ctx->quote_paths)
             ctx->cb("'", 1, ctx->user);
@@ -2418,6 +2436,9 @@ selection_from_clipboard(struct seat *seat, struct terminal *term, uint32_t seri
 bool
 text_to_primary(struct seat *seat, struct terminal *term, char *text, uint32_t serial)
 {
+    if (text == NULL || text[0] == '\0')
+        return false;
+
     if (term->wl->primary_selection_device_manager == NULL)
         return false;
 

@@ -1,5 +1,5 @@
 project('foot', 'c',
-        version: '1.27.0',
+        version: '1.28.0',
         license: 'MIT',
         meson_version: '>=0.59.0',
         default_options: [
@@ -151,7 +151,7 @@ wayland_protocols = dependency('wayland-protocols', version: '>=1.41',
                                default_options: ['tests=false'])
 wayland_client = dependency('wayland-client')
 wayland_cursor = dependency('wayland-cursor')
-xkb = dependency('xkbcommon', version: '>=1.0.0')
+xkb = dependency('xkbcommon', version: '>=1.6.0')
 fontconfig = dependency('fontconfig')
 utf8proc = dependency('libutf8proc', required: get_option('grapheme-clustering'))
 
@@ -357,7 +357,7 @@ executable(
   'util.h',
   version,
   dependencies: [tllist, utf8proc],
-  link_with: common,
+  link_with: [common, misc],
   install: true)
 
 install_data(

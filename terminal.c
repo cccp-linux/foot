@@ -523,7 +523,7 @@ term_arm_blink_timer(struct terminal *term)
 static void
 cursor_refresh(struct terminal *term)
 {
-    if (!term->window->is_configured)
+    if (unlikely(!term->window->is_configured || term->shutdown.in_progress))
         return;
 
     term->grid->cur_row->cells[term->grid->cursor.point.col].attrs.clean = 0;
@@ -2110,6 +2110,7 @@ term_reset(struct terminal *term, bool hard)
     term->insert_mode = false;
     term->bracketed_paste = false;
     term->focus_events = false;
+    term->visibility_reports = false;
     term->num_lock_modifier = true;
     term->bell_action_enabled = true;
     term->mouse_tracking = MOUSE_NONE;
@@ -3272,7 +3273,7 @@ void
 term_save_cursor(struct terminal *term)
 {
     term->grid->saved_cursor = term->grid->cursor;
-    term->vt.saved_attrs = term->vt.attrs;
+    term->grid->saved_attrs = term->vt.attrs;
     term->saved_charsets = term->charsets;
 }
 
@@ -3285,7 +3286,7 @@ term_restore_cursor(struct terminal *term, const struct cursor *cursor)
     term_cursor_to(term, row, col);
     term->grid->cursor.lcf = cursor->lcf;
 
-    term->vt.attrs = term->vt.saved_attrs;
+    term->vt.attrs = term->grid->saved_attrs;
     term->charsets = term->saved_charsets;
 
     term->bits_affecting_ascii_printer.charset =
@@ -3313,6 +3314,14 @@ term_visual_focus_out(struct terminal *term)
     term->visual_focus = false;
     term_cursor_blink_update(term);
     render_refresh_csd(term);
+}
+
+void
+term_send_visibility_report(struct terminal *term)
+{
+    term_to_slave(
+        term,
+        !term->window->is_suspended ? "\033[?999;1n" : "\033[?999;2n", 9);
 }
 
 void
@@ -3468,7 +3477,8 @@ term_mouse_grabbed(const struct terminal *term, const struct seat *seat)
     const struct key_binding_set *bindings =
         key_binding_for(term->wl->key_binding_manager, term->conf, seat);
     const xkb_mod_mask_t override_modmask = bindings->selection_overrides;
-    bool override_mods_pressed = (mods & override_modmask) == override_modmask;
+    bool override_mods_pressed = seat->kbd.xkb_keymap != NULL &&
+        mods != 0 && (mods & override_modmask) == override_modmask;
 
     return term->mouse_tracking == MOUSE_NONE ||
         (seat->kbd_focus == term && override_mods_pressed);
@@ -4086,6 +4096,10 @@ term_print(struct terminal *term, char32_t wc, int width, bool insert_mode_disab
         xassert(!grid->cursor.lcf);
 
     grid->cursor.point.col = col;
+
+#if defined(FOOT_GRAPHEME_CLUSTERING)
+    term->vt.codepoint_merging_ok = true;
+#endif
 }
 
 static void
@@ -4126,6 +4140,9 @@ ascii_printer_fast(struct terminal *term, char32_t wc)
         xassert(!grid->cursor.lcf);
 
     grid->cursor.point.col = col;
+#if defined(FOOT_GRAPHEME_CLUSTERING)
+    term->vt.codepoint_merging_ok = true;
+#endif
 
     if (unlikely(row->extra != NULL)) {
         grid_row_uri_range_erase(row, uri_start, uri_start);
@@ -4210,7 +4227,11 @@ term_process_and_print_non_ascii(struct terminal *term, char32_t wc)
 {
     int width = c32width(wc);
     bool insert_mode_disable = false;
-    const bool grapheme_clustering = term->grapheme_shaping;
+    const bool grapheme_clustering = term->grapheme_shaping
+#if defined(FOOT_GRAPHEME_CLUSTERING)
+        && term->vt.codepoint_merging_ok
+#endif
+        ;
 
 #if !defined(FOOT_GRAPHEME_CLUSTERING)
     xassert(!grapheme_clustering);

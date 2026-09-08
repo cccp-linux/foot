@@ -411,6 +411,7 @@ struct wl_window {
     bool is_fullscreen;
     bool is_maximized;
     bool is_resizing;
+    bool is_suspended;
     bool is_tiled_top;
     bool is_tiled_bottom;
     bool is_tiled_left;
@@ -426,6 +427,7 @@ struct wl_window {
         int width;
         int height;
         bool is_activated:1;
+        bool is_suspended:1;
         bool is_fullscreen:1;
         bool is_maximized:1;
         bool is_resizing:1;
@@ -455,6 +457,10 @@ struct wayland {
 
     struct wl_display *display;
     struct wl_registry *registry;
+#if defined(WL_FIXES_INTERFACE)
+    struct wl_fixes *fixes;
+    int fixes_version;
+#endif
     struct wl_compositor *compositor;
     struct wl_subcompositor *sub_compositor;
     struct wl_shm *shm;
