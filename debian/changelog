@@ -1,3 +1,68 @@
+foot (1.28.0-1.1) unstable; urgency=medium
+
+  [ Dimitry Ishenko ]
+  * Non-maintainer upload.
+  * Remove version patch
+  * Merge remote-tracking branch 'debian/debian/sid' into full
+  * Merge tag 'upstream/1.28.0' into full
+
+  [ Daniel Eklöf ]
+  * meson: bump version to 1.28.0
+  * changelog: prepare for 1.28.0
+  * config: remove support for the deprecated color-theme-switch-{1,2}
+    key bindings
+  * config: remove support for the deprecated colors and colors2
+    sections
+  * config: remove debug printf from unit test
+  * policy: no generative AI / LLM contributions
+  * changelog: selection-override-modifiers fixes
+  * config: add unit test for modifiers_disjoint()
+  * render: re-evaluate mouse col/row coordinates after a window resize
+  * input: ignore keyboard_enter() with NULL surface
+  * changelog: mouse grabbing without keymap
+  * wayland: handle_global_remove(): call wl_fixes::ack_global_remove(),
+    when available
+  * term: don't do a cursor refresh if we're shutting down
+  * changelog: window urgency on notification activation without XDG
+    token
+  * notify: improve debug logging for window focusing on notification
+    activation
+  * unicode: update data files to Unicode 17 (no actual changes)
+  * changelog: add missing bug reference
+  * wayland: fix version selection of the shape-manager global
+  * selection: find-quote-right: assert next-row > 0
+  * changelog: default URL regex updated
+  * config: add unit test for default URL regex
+  * config: update default URL regex
+  * doc: add fyi example configuration, as an alternative to notify-send
+  * scripts: various ruff fixes
+  * csi: log warning when capping color/title stack
+  * csi: push-title: limit title stack to 128 entries
+  * csi: XTPUSHCOLORS: limit stack depth to 128
+  * csi: clamp REP count to scrollback-lines * cols
+  * csi: kitty: limit pop count to the size of the flag stack
+  * config: font_parse(): handle font family names with -:,
+  * notify: fix crash in notify_done() when terminal has been closed
+    before notification
+  * main/client: add --class, an alias for --app-id
+  * wayland: win_destroy(): unmap overlay surface before destroy
+  * selection: escape quotes in file names being DnD:ed on the command
+    line
+  * osc: kitty text-size: bail out if text is zero-length
+  * sixel: fix NULL deref when using a shared palette and gamma-correct
+    blending
+  * sixel: clamp pan/pad to 5
+  * term: do not allow codepoint merging into grapheme clusters directly
+    after a cursor move
+  * meson: require xkbcommon >= 1.6.0
+  * csi: DECCRA: clamp and verify destination rectangle coordinates
+  * uri-parse: fix out-of-bounds read with malformed %-encoded content
+  * uri-parse: add a bunch of unit tests
+  * project: add .clangd, where we set -Wno-c2y-extensions
+  * changelog: add new 'unreleased' section
+
+ -- Dimitry Ishenko <dimitry.ishenko@gmail.com>  Tue, 08 Sep 2026 18:48:58 -0400
+
 foot (1.28.0-1) unstable; urgency=medium
 
   * New upstream release
