@@ -1,3 +1,9 @@
+foot (1.28.0-1) unstable; urgency=medium
+
+  * New upstream release
+
+ -- Birger Schacht <birger@debian.org>  Tue, 08 Sep 2026 14:56:00 +0200
+
 foot (1.27.0.1-1) unstable; urgency=medium
 
   * Non-maintainer upload.
