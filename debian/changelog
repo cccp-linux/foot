@@ -1,3 +1,9 @@
+foot (1.28.0-1+cccp1) unstable; urgency=medium
+
+  * d/patches: Add clear-with-scrollback action
+
+ -- Dimitry Ishenko <dimitry.ishenko@gmail.com>  Sun, 08 Nov 2026 12:02:03 -0500
+
 foot (1.28.0-1) unstable; urgency=medium
 
   * New upstream release
